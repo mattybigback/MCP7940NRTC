@@ -9,9 +9,16 @@
 // PUBLIC METHODS
 // *********************************************
 MCP7940NRTC::MCP7940NRTC(uint8_t sdaPin, uint8_t sclPin)
-: _sdaPin(sdaPin), _sclPin(sclPin) {
-    Wire.begin(_sdaPin, _sclPin);
+    : _sdaPin(sdaPin), _sclPin(sclPin)
+{
+#if defined(ESP8266) || defined(ESP32) || defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
+    Wire.begin(_sdaPin, _sclPin);   // pin-remapping overload (ESP cores only)
+#else
+    (void)_sdaPin; (void)_sclPin;   // keep -Wall/-Wextra silent
+    Wire.begin();                   // everyone else: use default I²C pins
+#endif
 }
+
 
 //Init exists
 bool MCP7940NRTC::_exists = false;
